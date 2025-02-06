@@ -19,7 +19,7 @@ class Minimax:
         self.grid = self.trie.grid_gen()
         return self.grid
 
-    def minimax(self ,i: int, j: int, s: str) -> (int, str):
+    def minimax(self ,i: int, j: int, s: str) -> tuple[int, str]:
         score = 0
         s = self.grid[i][j] + s
         score += self.trie1.work(s)

@@ -9,6 +9,7 @@ from game.ui import draw_ui
 from game.player_selection_screen import draw_player_selection_screen
 from utils.utils import check_word
 from game.game_logic import handle_player_turn, ai_turn
+from utils.word_generator import generate_words
 
 pygame.init()
 pygame.display.init()
@@ -41,8 +42,7 @@ LETTER_VALUES = {
 }
 
 # Dict
-WORD_LIST = ["PYGAME", "PYTHON", "PROGRAM", "MATRIX", 
-            "SCORE", "PLAYER", "COMPUTER", "WORD", "INTELLIGENCE", "ARTIFICIAL"]
+WORD_LIST = split.generate_words()
 
 overall_score = 0
 selected_cells = []

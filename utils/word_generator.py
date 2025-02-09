@@ -2,7 +2,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="",
 )
 
 def generate_words(num_words):

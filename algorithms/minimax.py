@@ -1,4 +1,5 @@
 from .trie import Trie
+from typing import Tuple
 
 class Minimax:
     def __init__(self, n, m):
@@ -19,7 +20,7 @@ class Minimax:
         self.grid = self.trie.grid_gen()
         return self.grid
 
-    def minimax(self ,i: int, j: int, s: str) -> tuple[int, str]:
+    def minimax(self, i: int, j: int, s: str) -> Tuple[int, str]:
         score = 0
         s = self.grid[i][j] + s
         score += self.trie1.work(s)
@@ -45,3 +46,4 @@ class Minimax:
                 return aux1 + score, 'D'
             else:
                 return aux2 + score, 'R'
+                

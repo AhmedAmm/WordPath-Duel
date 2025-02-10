@@ -3,7 +3,7 @@ from algorithms.minimax import Minimax
 
 def create_grid(grid_size, words):
     minimax = Minimax(grid_size, grid_size, words)
-    return minimax.grid_gen()
+    return minimax
 
 def draw_grid(screen, grid, selected_cells, player_turn, COLORS, FONT, SMALL_FONT, WIDTH, HEIGHT, grid_size, player_image, ai_image):
     cell_size = min(WIDTH // grid_size, HEIGHT // grid_size)

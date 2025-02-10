@@ -1,15 +1,12 @@
 from settings import *
 import pygame
 import sys
-from algorithms.minimax import Minimax
 from game.loading_screen import draw_loading_screen
 from game.difficulty_screen import draw_difficulty_screen, get_grid_size
 from game.grid import create_grid, draw_grid
 from game.ui import draw_ui
 from game.player_selection_screen import draw_player_selection_screen
-from utils.utils import check_word
 from game.game_logic import handle_player_turn, ai_turn
-from utils.word_generator import generate_words
 
 class Main:
     def __init__(self):
@@ -32,6 +29,8 @@ class Main:
         self.message = ""
         self.valid_words_found = set()
         self.overall_score = 0
+
+        self.minimax = None
         
         # UI Elements
         self.pvp_button = None
@@ -65,10 +64,10 @@ class Main:
                 self.pvp_button, self.pvai_button = draw_loading_screen(self.screen, COLORS, FONT, 1280, 720)
                 self.handle_menu_events()
             elif self.game_mode == "PVA" and self.grid is None:
-                self.go_back_button, self.slider_rect, self.confirm_button = draw_difficulty_screen(self.screen, COLORS, FONT, 1280, 720, self.difficulty_level or 1)
+                self.go_back_button, self.slider_rect, self.confirm_button = draw_difficulty_screen(self.screen, self.difficulty_level or 1)
                 self.handle_difficulty_selection()
             elif self.game_mode == "PVA" and self.player_choice is None:
-                self.duck_1_pos, self.duck_2_pos, self.confirm_button = draw_player_selection_screen(self.screen, COLORS, FONT, 1280, 720, self.duck_1, self.duck_2, self.player_choice)
+                self.duck_1_pos, self.duck_2_pos, self.confirm_button = draw_player_selection_screen(self.screen, self.duck_1, self.duck_2, self.player_choice)
                 self.handle_player_selection()
             else:
                 self.handle_gameplay()
@@ -85,7 +84,8 @@ class Main:
                     self.game_mode = "PVP"
                     self.difficulty_level = 1
                     self.grid_size = get_grid_size(self.difficulty_level)
-                    self.grid = create_grid(self.grid_size, WORDS)
+                    self.minimax = create_grid(self.grid_size, WORDS)
+                    self.grid = self.minimax.grid_gen()
                 elif self.pvai_button and self.pvai_button.collidepoint(event.pos):
                     self.game_mode = "PVA"
                     self.difficulty_level = None
@@ -102,7 +102,8 @@ class Main:
                     self.difficulty_level = max(1, min(self.difficulty_level, 5))
                 elif self.confirm_button and self.confirm_button.collidepoint(event.pos) and self.difficulty_level:
                     self.grid_size = get_grid_size(self.difficulty_level)
-                    self.grid = create_grid(self.grid_size, WORDS)
+                    self.minimax = create_grid(self.grid_size, WORDS)
+                    self.grid = self.minimax.grid_gen()
                     self.player_choice = None
     
     def handle_player_selection(self):
@@ -119,17 +120,6 @@ class Main:
                     self.player_image = self.duck_2
                     self.ai_image = self.duck_1
                 elif self.confirm_button and self.confirm_button.collidepoint(event.pos) and self.player_choice:
-                    # self.grid = create_grid(self.grid_size, LETTER_VALUES)
-                    # minimax = Minimax(5, 5, [""])
-                    # minimax.trie.insert("a", 5)
-                    # minimax.trie.insert("ab", 3)
-                    # minimax.trie.insert("abc", -2)
-                    # minimax.trie.insert("abcd", 2)
-                    # minimax.trie.insert("abcde", -1)
-                    # minimax.trie.insert("aab", 1)
-                    # self.grid = minimax.grid_gen()
-                    # print("wsel")
-                    # print(self.grid)
                     pass
     
     def handle_gameplay(self):
@@ -137,15 +127,12 @@ class Main:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and self.player_turn:
-                self.player_turn, self.selected_cells, self.current_word, self.message = handle_player_turn(
-                    event, self.grid, self.grid_size, self.selected_cells, self.current_word, self.player_turn, 
-                    self.message, self.overall_score, self.valid_words_found, WORDS
-                )
+                self.player_turn, self.selected_cells, self.current_word, self.message, self.overall_score = handle_player_turn(self.grid, self.grid_size, self.selected_cells, self.current_word, self.player_turn, self.message, self.overall_score, self.minimax)
         
         if self.game_mode == "PVA" and not self.player_turn:
-            self.player_turn, self.selected_cells, self.current_word, self.message = ai_turn(
+            self.player_turn, self.selected_cells, self.current_word, self.message, self.overall_score = ai_turn(
                 self.grid, self.grid_size, self.selected_cells, self.current_word, self.player_turn, 
-                self.message, self.overall_score, self.valid_words_found, WORDS
+                self.message, self.overall_score, self.minimax
             )
 
         draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, COLORS, FONT, SMALL_FONT, 1280, 720, self.grid_size, self.player_image, self.ai_image)

@@ -30,11 +30,3 @@ FONT = pygame.font.Font(None, 36)
 SMALL_FONT = pygame.font.Font(None, 24)
 
 WORDS = [("a", 5), ("ab", 3), ("abc", -2), ("abcd", 2), ("abcde", -1), ("aab", 1)]
-minimax = Minimax(5, 5, WORDS)
-minimax.trie.insert("a", 5)
-minimax.trie.insert("ab", 3)
-minimax.trie.insert("abc", -2)
-minimax.trie.insert("abcd", 2)
-minimax.trie.insert("abcde", -1)
-minimax.trie.insert("aab", 1)
-grid = minimax.grid_gen()

@@ -1,3 +1,8 @@
+import pygame 
+from algorithms.minimax import Minimax
+
+pygame.init()
+
 # Window configurations
 PADDING = 30
 WINDOW_WIDTH = 720
@@ -11,4 +16,25 @@ COLUMNS = 10
 CELL_SIZE = 30
 
 # Colors
+COLORS = {
+    'background': (240, 240, 240),
+    'cell': (255, 255, 255),
+    'player': (0, 200, 0),
+    'ai': (200, 0, 0),
+    'text': (0, 0, 0)
+}
 GRAY = "#1C1C1C"
+
+# Font config
+FONT = pygame.font.Font(None, 36)
+SMALL_FONT = pygame.font.Font(None, 24)
+
+WORDS = [("a", 5), ("ab", 3), ("abc", -2), ("abcd", 2), ("abcde", -1), ("aab", 1)]
+minimax = Minimax(5, 5, WORDS)
+minimax.trie.insert("a", 5)
+minimax.trie.insert("ab", 3)
+minimax.trie.insert("abc", -2)
+minimax.trie.insert("abcd", 2)
+minimax.trie.insert("abcde", -1)
+minimax.trie.insert("aab", 1)
+grid = minimax.grid_gen()

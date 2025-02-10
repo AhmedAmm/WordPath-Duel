@@ -1,24 +1,16 @@
 import pygame
-import random
+from algorithms.minimax import Minimax
 
-def create_grid(grid_size, LETTER_VALUES):
-    grid = []
-    for i in range(grid_size):
-        row = []
-        for j in range(grid_size):
-            letter = chr(random.randint(ord('A'), ord('Z')))
-            row.append({
-                'letter': letter,
-                'score': LETTER_VALUES.get(letter, 0),
-            })
-        grid.append(row)
-    return grid
+def create_grid(grid_size, words):
+    minimax = Minimax(grid_size, grid_size, words)
+    return minimax.grid_gen()
 
 def draw_grid(screen, grid, selected_cells, player_turn, COLORS, FONT, SMALL_FONT, WIDTH, HEIGHT, grid_size, player_image, ai_image):
     cell_size = min(WIDTH // grid_size, HEIGHT // grid_size)
+    
     for i in range(grid_size):
         for j in range(grid_size):
-            cell = grid[i][j]
+            cell_letter = grid[i][j]  # Now, each cell is just a letter (string)
             x = j * cell_size
             y = i * cell_size
         
@@ -30,11 +22,10 @@ def draw_grid(screen, grid, selected_cells, player_turn, COLORS, FONT, SMALL_FON
             pygame.draw.rect(screen, color, (x, y, cell_size, cell_size))
             pygame.draw.rect(screen, COLORS['text'], (x, y, cell_size, cell_size), 1)
             
-            text = FONT.render(cell['letter'], True, COLORS['text'])
-            screen.blit(text, (x + cell_size // 4, y + cell_size // 4))
-            
-            score_text = SMALL_FONT.render(str(cell['score']), True, COLORS['text'])
-            screen.blit(score_text, (x + 3 * cell_size // 4, y + 3 * cell_size // 4))
+            # Render the letter in the center of the cell
+            text = FONT.render(cell_letter.upper(), True, COLORS['text'])  
+            text_rect = text.get_rect(center=(x + cell_size // 2, y + cell_size // 2))
+            screen.blit(text, text_rect)
     
     # Draw player and AI images in the top-left cell
     if player_image:

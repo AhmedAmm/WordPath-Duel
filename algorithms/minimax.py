@@ -2,10 +2,10 @@ from .trie import Trie
 from typing import Tuple
 
 class Minimax:
-    def __init__(self, n, m):
+    def __init__(self, n, m, words):
         self.trie = Trie(n,m)
         self.trie1 = Trie(1,1)
-        self.words=[]
+        self.words = words
         self.grid = [['.'] * m for _ in range(n)]
         self.n = n
         self.m = m

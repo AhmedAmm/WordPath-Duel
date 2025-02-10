@@ -22,17 +22,4 @@ def handle_player_turn(event, grid, grid_size, selected_cells, current_word, pla
 
 
 def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, valid_words_found, WORD_LIST):
-    from algorithms.minimax import Minimax
-    minimax = Minimax(grid_size, grid_size)
-    minimax.grid = [[grid[i][j]['letter'] for j in range(grid_size)] for i in range(grid_size)]
-    score, move = minimax.minimax(0, 0, "")
-    if move == 'D':
-        selected_cells.append((selected_cells[-1][0] + 1, selected_cells[-1][1]))
-    elif move == 'R':
-        selected_cells.append((selected_cells[-1][0], selected_cells[-1][1] + 1))
-    current_word += grid[selected_cells[-1][0]][selected_cells[-1][1]]['letter']
-    if check_word(grid, selected_cells, current_word, overall_score, valid_words_found, WORD_LIST)[0]:
-        selected_cells = []
-        current_word = ""
-    player_turn = True
-    return player_turn, selected_cells, current_word, message
+    pass

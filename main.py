@@ -5,6 +5,7 @@ from game.difficulty_screen import draw_difficulty_screen, get_grid_size
 from game.grid import create_grid, draw_grid
 from game.ui import draw_ui
 from game.game_logic import handle_player_turn, ai_turn
+from algorithms.trie import Trie
 
 class Main:
     def __init__(self):
@@ -27,6 +28,8 @@ class Main:
         self.overall_score = 0
 
         self.minimax = None
+        self.trie = Trie(1, 1)
+        self.init_trie()
         
         # UI Elements
         self.pvp_button = None
@@ -34,6 +37,10 @@ class Main:
         self.go_back_button = None
         self.slider_rect = None
         self.confirm_button = None
+
+    def init_trie(self):
+        for word, score in WORDS:
+            self.trie.insert(word[::-1], score)
 
     def run(self):
         while self.running:
@@ -117,7 +124,7 @@ class Main:
                     self.message, 
                     self.overall_score) = handle_player_turn(
                         self.grid, self.grid_size, self.selected_cells, self.current_word,
-                        self.player_turn, self.message, self.overall_score, self.minimax
+                        self.player_turn, self.message, self.overall_score, self.trie, self.minimax
                     )
         # If it's the AI's turn in PVA mode, let the AI move.
         if self.game_mode == "PVA" and not self.player_turn:
@@ -127,7 +134,7 @@ class Main:
             self.message, 
             self.overall_score) = ai_turn(
                 self.grid, self.grid_size, self.selected_cells, self.current_word,
-                self.player_turn, self.message, self.overall_score, self.minimax
+                self.player_turn, self.message, self.overall_score, self.minimax, self.trie
             )
 
         draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, self.grid_size)

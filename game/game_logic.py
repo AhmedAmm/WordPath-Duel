@@ -2,7 +2,7 @@ import pygame
 from utils.utils import is_valid_selection
 from settings import *
 
-def handle_player_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, minimax_instance):
+def handle_player_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, trie_instance, minimax_instance):
     """Handles player's turn by allowing them to move right or down and update their score."""
     
     x, y = pygame.mouse.get_pos()
@@ -20,8 +20,7 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
                     message = ""
 
                     # Use minimax to evaluate the player's move
-                    score, _ = minimax_instance.minimax(row, col, current_word)
-                    overall_score += score
+                    overall_score += trie_instance.work(current_word[::-1])
 
                     # If at the bottom-right, end the turn
                     if row == grid_size - 1 and col == grid_size - 1:
@@ -39,7 +38,7 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
 
             # Immediately switch to AI turn if the first move was made
             player_turn, selected_cells, current_word, message, overall_score = ai_turn(
-                grid, grid_size, selected_cells, current_word, False, message, overall_score, minimax_instance
+                grid, grid_size, selected_cells, current_word, False, message, overall_score, minimax_instance, trie_instance, 
             )
 
     return player_turn, selected_cells, current_word, message, overall_score
@@ -47,7 +46,7 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
 
 
 
-def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, minimax_instance):
+def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, minimax_instance, trie_instance):
     """AI selects the best move using Minimax and updates the game state accordingly."""
     
     if selected_cells:
@@ -56,7 +55,7 @@ def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message,
         row, col = 0, 0  # Start position
 
     # Use minimax to determine best move
-    score, best_move = minimax_instance.minimax(row, col, current_word)
+    _, best_move = minimax_instance.minimax(row, col, current_word)
 
     # Make the move (right or down)
     if best_move == 'R' and col + 1 < grid_size:
@@ -69,7 +68,7 @@ def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message,
     # Update AI path
     selected_cells.append((row, col))
     current_word += grid[row][col]  # Append letter from grid
-    overall_score += score
+    overall_score += trie_instance.work(current_word[::-1])
 
     # If at the bottom-right, end the game
     if row == grid_size - 1 and col == grid_size - 1:

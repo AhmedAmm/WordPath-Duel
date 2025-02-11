@@ -9,7 +9,7 @@ from game.game_logic import handle_player_turn, ai_turn
 class Main:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1280, 720))
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Word-Path Duel")
 

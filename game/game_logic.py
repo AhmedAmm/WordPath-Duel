@@ -35,6 +35,8 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
             # First move, so just add the first selection
             selected_cells.append((row, col))
             current_word += grid[row][col]
+            print(current_word)
+            overall_score += trie_instance.work(current_word[::-1])
 
             # Immediately switch to AI turn if the first move was made
             player_turn, selected_cells, current_word, message, overall_score = ai_turn(

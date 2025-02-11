@@ -100,6 +100,8 @@ class Main:
                         self.player_choice = None
                         self.selected_cells = [(0, 0)]
                         self.current_word = self.grid[0][0]
+                        self.player_turn = True
+                        self.overall_score = self.trie.work(self.current_word)
 
     
     def handle_gameplay(self):

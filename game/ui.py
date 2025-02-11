@@ -1,23 +1,62 @@
 import pygame
+from settings import *
 
-def draw_ui(screen, overall_score, current_word, message, valid_words_found, COLORS, FONT, SMALL_FONT, WIDTH, HEIGHT):
-    text = FONT.render(f"Score: {overall_score}", True, COLORS['player'])
-    screen.blit(text, (WIDTH - 200, 20))
+def wrap_text(text, font, max_width):
+    """
+    Breaks the text into multiple lines so that each line's width is less than max_width.
+    This is a simple implementation that splits the text character-by-character.
+    """
+    lines = []
+    current_line = ""
+    for char in text:
+        test_line = current_line + char
+        if font.size(test_line)[0] > max_width:
+            if current_line:
+                lines.append(current_line)
+            current_line = char
+        else:
+            current_line = test_line
+    if current_line:
+        lines.append(current_line)
+    return lines
+
+def draw_ui(screen, overall_score, current_word, message, valid_words_found):
+    # Determine the UI area (reserved on the right)
+    ui_x = WINDOW_WIDTH - UI_WIDTH
+    ui_rect = pygame.Rect(ui_x, 0, UI_WIDTH, WINDOW_HEIGHT)
     
-    word_text = FONT.render(f"Current: {current_word}", True, COLORS['text'])
-    screen.blit(word_text, (WIDTH - 200, 60))
+    # Draw a background for the UI area
+    pygame.draw.rect(screen, (50, 50, 50), ui_rect)
+    pygame.draw.rect(screen, COLORS['text'], ui_rect, 2)
     
-    msg_text = FONT.render(message, True, COLORS['text'])
-    screen.blit(msg_text, (WIDTH - 200, 100))
+    # Draw Score at the top of the UI area.
+    score_text = FONT.render(f"Score: {overall_score}", True, COLORS['player'])
+    screen.blit(score_text, (ui_x + 10, 20))
     
-    found_text = SMALL_FONT.render("Found words: " + ", ".join(valid_words_found), 
-                                 True, COLORS['text'])
-    screen.blit(found_text, (WIDTH - 200, 140))
+    # Wrap and draw the current word.
+    max_text_width = UI_WIDTH - 20  # leave a 10px margin on each side
+    current_word_full = "Current: " + current_word
+    wrapped_lines = wrap_text(current_word_full, FONT, max_text_width)
+    y_offset = 60
+    for line in wrapped_lines:
+        current_line_text = FONT.render(line, True, COLORS['text'])
+        screen.blit(current_line_text, (ui_x + 10, y_offset))
+        y_offset += FONT.get_linesize()
     
+    # Draw message
+    message_text = FONT.render(message, True, COLORS['text'])
+    screen.blit(message_text, (ui_x + 10, y_offset + 10))
+    
+    # Draw found words
+    found_text = SMALL_FONT.render("Found: " + ", ".join(valid_words_found), True, COLORS['text'])
+    screen.blit(found_text, (ui_x + 10, WINDOW_HEIGHT - 120))
+    
+    # Draw the "Go Back" button near the bottom of the UI area.
     go_back_text = FONT.render("Go Back", True, COLORS['text'])
-    go_back_button = pygame.Rect(WIDTH - 200, HEIGHT - 60, 100, 40)
-    pygame.draw.rect(screen, COLORS['cell'], go_back_button)
+    go_back_button = pygame.Rect(ui_x + 10, WINDOW_HEIGHT - 60, 100, 40)
+    pygame.draw.rect(screen, COLORS['player'], go_back_button)
     pygame.draw.rect(screen, COLORS['text'], go_back_button, 2)
-    screen.blit(go_back_text, (WIDTH - 190, HEIGHT - 50))
+    go_back_text_rect = go_back_text.get_rect(center=go_back_button.center)
+    screen.blit(go_back_text, go_back_text_rect)
     
     return go_back_button

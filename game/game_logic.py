@@ -6,8 +6,7 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
     """Handles player's turn by allowing them to move right or down and update their score."""
     
     x, y = pygame.mouse.get_pos()
-    col = x // (WINDOW_WIDTH // grid_size)
-    row = y // (WINDOW_HEIGHT // grid_size)
+    row, col = get_grid_coords(x, y, grid_size)
 
     if 0 <= row < grid_size and 0 <= col < grid_size:
         if selected_cells:
@@ -79,3 +78,9 @@ def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message,
         player_turn = True
 
     return player_turn, selected_cells, current_word, message, overall_score
+
+def get_grid_coords(x, y, grid_size):
+    grid_area_width = WINDOW_WIDTH - UI_WIDTH
+    col = x // (grid_area_width // grid_size)
+    row = y // (WINDOW_HEIGHT // grid_size)
+    return row, col

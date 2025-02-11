@@ -5,10 +5,11 @@ pygame.init()
 
 # Window configurations
 PADDING = 30
-WINDOW_WIDTH = 720
+WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT
 FPS = 60
+UI_WIDTH = 200
 
 # Game configurations
 ROWS = 10
@@ -16,12 +17,13 @@ COLUMNS = 10
 CELL_SIZE = 30
 
 # Colors
+HIGHLIGHT_COLOR = (255, 255, 0)
 COLORS = {
-    'background': (240, 240, 240),
-    'cell': (255, 255, 255),
-    'player': (0, 200, 0),
-    'ai': (200, 0, 0),
-    'text': (0, 0, 0)
+    'background': (28, 28, 28),  # Dark background
+    'cell': (70, 70, 70),        # Slightly lighter for grid cells
+    'player': (0, 200, 0),       # Bright green for the player
+    'ai': (200, 0, 0),           # A vivid red for the AI
+    'text': (255, 255, 255)      # White text for contrast
 }
 GRAY = "#1C1C1C"
 

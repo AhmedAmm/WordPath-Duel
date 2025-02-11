@@ -1,6 +1,12 @@
 import pygame
 from utils.utils import is_valid_selection
 from settings import *
+import time
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'  # Optional: Set window position
+os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the window
+os.environ['SDL_VIDEODRIVER'] = 'directx'  # Use DirectX for hardware acceleration (Windows)
+
 
 def handle_player_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, trie_instance, minimax_instance):
     """Handles player's turn by allowing them to move right or down and update their score."""
@@ -31,17 +37,6 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
                     message = "Invalid selection!"
             else:
                 message = "Invalid move! You can only move right or down."
-        else:
-            # First move, so just add the first selection
-            selected_cells.append((row, col))
-            current_word += grid[row][col]
-            print(current_word)
-            overall_score += trie_instance.work(current_word[::-1])
-
-            # Immediately switch to AI turn if the first move was made
-            player_turn, selected_cells, current_word, message, overall_score = ai_turn(
-                grid, grid_size, selected_cells, current_word, False, message, overall_score, minimax_instance, trie_instance, 
-            )
 
     return player_turn, selected_cells, current_word, message, overall_score
 
@@ -50,7 +45,6 @@ def handle_player_turn(grid, grid_size, selected_cells, current_word, player_tur
 
 def ai_turn(grid, grid_size, selected_cells, current_word, player_turn, message, overall_score, minimax_instance, trie_instance):
     """AI selects the best move using Minimax and updates the game state accordingly."""
-    
     if selected_cells:
         row, col = selected_cells[-1]
     else:

@@ -6,6 +6,10 @@ from game.grid import create_grid, draw_grid
 from game.ui import draw_ui
 from game.game_logic import handle_player_turn, ai_turn
 from algorithms.trie import Trie
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'  # Optional: Set window position
+os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the window
+os.environ['SDL_VIDEODRIVER'] = 'directx'  # Use DirectX for hardware acceleration (Windows)
 
 class Main:
     def __init__(self):
@@ -24,13 +28,11 @@ class Main:
         self.current_word = ""
         self.player_turn = True
         self.message = ""
-        self.valid_words_found = set()
         self.overall_score = 0
-
         self.minimax = None
         self.trie = Trie(1, 1)
         self.init_trie()
-        
+
         # UI Elements
         self.pvp_button = None
         self.pvai_button = None
@@ -45,16 +47,16 @@ class Main:
     def run(self):
         while self.running:
             self.screen.fill(GRAY)
-            
+
             if self.game_mode is None:
-                self.pvp_button, self.pvai_button = draw_loading_screen(self.screen, COLORS, FONT, 1280, 720)
+                self.pvp_button, self.pvai_button = draw_loading_screen(self.screen)
                 self.handle_menu_events()
             elif self.game_mode == "PVA" and self.grid is None:
                 self.go_back_button, self.slider_rect, self.confirm_button = draw_difficulty_screen(self.screen, self.difficulty_level or 1)
                 self.handle_difficulty_selection()
             else:
                 self.handle_gameplay()
-            
+
             pygame.display.flip()
             self.clock.tick(FPS)
 
@@ -73,8 +75,8 @@ class Main:
                     self.current_word = self.grid[0][0]
                 elif self.pvai_button and self.pvai_button.collidepoint(event.pos):
                     self.game_mode = "PVA"
-                    self.difficulty_level = None
-    
+                    self.difficulty_level = 1
+
     def handle_difficulty_selection(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -103,7 +105,6 @@ class Main:
                         self.player_turn = True
                         self.overall_score = self.trie.work(self.current_word)
 
-    
     def handle_gameplay(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -118,29 +119,43 @@ class Main:
                     # Optionally, you can also reset other gameplay values:
                     self.overall_score = 0
                     self.message = ""
+                    self.game_mode = "PVA"
+                    return
                 # Otherwise, if it's the player's turn, handle the player's move.
                 elif self.player_turn:
-                    (self.player_turn, 
-                    self.selected_cells, 
-                    self.current_word, 
-                    self.message, 
-                    self.overall_score) = handle_player_turn(
+                    (self.player_turn,
+                     self.selected_cells,
+                     self.current_word,
+                     self.message,
+                     self.overall_score) = handle_player_turn(
                         self.grid, self.grid_size, self.selected_cells, self.current_word,
                         self.player_turn, self.message, self.overall_score, self.trie, self.minimax
                     )
+
+                    # Draw the updated interface after the player's move.
+                    draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, self.grid_size)
+                    self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, [])
+                    pygame.display.flip()  # Update the display to show the changes.
+
+                    # Add a 1-second delay before the AI's turn.
+                    pygame.time.delay(1000)  # 1000 milliseconds = 1 second
+                    # Alternatively, you can use time.sleep(1)
+
         # If it's the AI's turn in PVA mode, let the AI move.
         if self.game_mode == "PVA" and not self.player_turn:
-            (self.player_turn, 
-            self.selected_cells, 
-            self.current_word, 
-            self.message, 
-            self.overall_score) = ai_turn(
+            (self.player_turn,
+             self.selected_cells,
+             self.current_word,
+             self.message,
+             self.overall_score) = ai_turn(
                 self.grid, self.grid_size, self.selected_cells, self.current_word,
                 self.player_turn, self.message, self.overall_score, self.minimax, self.trie
             )
 
+        # Draw the updated interface after the AI's move.
         draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, self.grid_size)
-        self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, self.valid_words_found)
+        self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, [])
+        pygame.display.flip()  # Update the display to show the changes.
 
 
 if __name__ == "__main__":

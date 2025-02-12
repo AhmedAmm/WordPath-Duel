@@ -48,7 +48,7 @@ def wrap_word_list(words, font, max_width):
         lines.append(" ".join(current_line))
     return lines
 
-def draw_ui(screen, overall_score, current_word, message, valid_words_found, words):
+def draw_ui(screen, overall_score, current_word, message, words):
     # Determine the UI area (reserved on the right)
     ui_x = WINDOW_WIDTH - UI_WIDTH
     ui_rect = pygame.Rect(ui_x, 0, UI_WIDTH, WINDOW_HEIGHT)
@@ -102,11 +102,6 @@ def draw_ui(screen, overall_score, current_word, message, valid_words_found, wor
         line_text = FONT.render(line, True, COLORS['text'])
         screen.blit(line_text, (ui_x + 10, winner_y_offset))
         winner_y_offset += FONT.get_linesize()
-    # ------------------------------------------------
-    
-    # Draw found words
-    found_text = SMALL_FONT.render("Found: " + ", ".join(valid_words_found), True, COLORS['text'])
-    screen.blit(found_text, (ui_x + 10, WINDOW_HEIGHT - 120))
     
     # Draw the "Go Back" button near the bottom of the UI area.
     go_back_text = FONT.render("Go Back", True, COLORS['text'])

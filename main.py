@@ -139,7 +139,7 @@ class Main:
 
                     # Draw the updated interface after the player's move.
                     draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, self.grid_size)
-                    self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, [], self.words)
+                    self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, self.words)
                     pygame.display.flip()  # Update the display to show the changes.
 
                     # Add a 1-second delay before the AI's turn.
@@ -159,7 +159,7 @@ class Main:
 
         # Draw the updated interface after the AI's move.
         draw_grid(self.screen, self.grid, self.selected_cells, self.player_turn, self.grid_size)
-        self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, [], self.words)
+        self.go_back_button = draw_ui(self.screen, self.overall_score, self.current_word, self.message, self.words)
         pygame.display.flip()  # Update the display to show the changes.
 
 

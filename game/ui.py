@@ -1,9 +1,6 @@
 import pygame
 from settings import *
 
-import pygame
-from settings import *
-
 def wrap_text(text, font, max_width):
     """
     Breaks the text into multiple lines so that each line's width is less than max_width.

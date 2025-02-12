@@ -5,8 +5,10 @@ from game.difficulty_screen import draw_difficulty_screen, get_grid_size
 from game.grid import create_grid, draw_grid
 from game.ui import draw_ui
 from game.game_logic import handle_player_turn, ai_turn
+from utils.word_generator import generate_words
 from algorithms.trie import Trie
 import os
+
 os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'  # Optional: Set window position
 os.environ['SDL_VIDEO_CENTERED'] = '1'  # Center the window
 os.environ['SDL_VIDEODRIVER'] = 'directx'  # Use DirectX for hardware acceleration (Windows)
@@ -30,6 +32,9 @@ class Main:
         self.message = ""
         self.overall_score = 0
         self.minimax = None
+
+        self.words = generate_words(6)
+
         self.trie = Trie(1, 1)
         self.init_trie()
 
@@ -41,7 +46,7 @@ class Main:
         self.confirm_button = None
 
     def init_trie(self):
-        for word, score in WORDS:
+        for word, score in self.words:
             self.trie.insert(word[::-1], score)
 
     def run(self):
@@ -69,7 +74,7 @@ class Main:
                     self.game_mode = "PVP"
                     self.difficulty_level = 1
                     self.grid_size = get_grid_size(self.difficulty_level)
-                    self.minimax = create_grid(self.grid_size, WORDS)
+                    self.minimax = create_grid(self.grid_size, self.words)
                     self.grid = self.minimax.grid_gen()
                     self.selected_cells = [(0, 0)]
                     self.current_word = self.grid[0][0]
@@ -97,7 +102,7 @@ class Main:
                     # If the Confirm button is clicked and a level is selected, update grid.
                     if self.confirm_button and self.confirm_button.collidepoint(event.pos) and self.difficulty_level:
                         self.grid_size = get_grid_size(self.difficulty_level)
-                        self.minimax = create_grid(self.grid_size, WORDS)
+                        self.minimax = create_grid(self.grid_size, self.words)
                         self.grid = self.minimax.grid_gen()
                         self.player_choice = None
                         self.selected_cells = [(0, 0)]

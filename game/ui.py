@@ -1,6 +1,9 @@
 import pygame
 from settings import *
 
+import pygame
+from settings import *
+
 def wrap_text(text, font, max_width):
     """
     Breaks the text into multiple lines so that each line's width is less than max_width.
@@ -20,7 +23,35 @@ def wrap_text(text, font, max_width):
         lines.append(current_line)
     return lines
 
-def draw_ui(screen, overall_score, current_word, message, valid_words_found):
+def wrap_word_list(words, font, max_width):
+    """
+    Takes a list of words (strings) and groups them into lines where the total width of each line
+    does not exceed max_width. Returns a list of strings, where each string is a line of words.
+    """
+    lines = []
+    current_line = []
+    current_width = 0
+    space_width = font.size(" ")[0]
+    
+    for word in words:
+        word_width = font.size(word)[0]
+        # If adding this word exceeds max_width, push current_line to lines and start a new line.
+        if current_line and current_width + space_width + word_width > max_width:
+            lines.append(" ".join(current_line))
+            current_line = [word]
+            current_width = word_width
+        else:
+            if current_line:
+                current_width += space_width + word_width
+            else:
+                current_width = word_width
+            current_line.append(word)
+    
+    if current_line:
+        lines.append(" ".join(current_line))
+    return lines
+
+def draw_ui(screen, overall_score, current_word, message, valid_words_found, words):
     # Determine the UI area (reserved on the right)
     ui_x = WINDOW_WIDTH - UI_WIDTH
     ui_rect = pygame.Rect(ui_x, 0, UI_WIDTH, WINDOW_HEIGHT)
@@ -44,8 +75,21 @@ def draw_ui(screen, overall_score, current_word, message, valid_words_found):
         y_offset += FONT.get_linesize()
     
     # Draw message
-    message_text = FONT.render(message, True, COLORS['text'])
-    screen.blit(message_text, (ui_x + 10, y_offset + 10))
+    wrapped_message_text_lines = wrap_text(message, FONT, max_text_width)
+    # message_text = FONT.render(message, True, COLORS['text'])
+    for line in wrapped_message_text_lines:
+        curr_msg = FONT.render(line, True, COLORS['text'])
+        screen.blit(curr_msg, (ui_x + 10, y_offset))
+        y_offset += FONT.get_linesize()
+    
+    # Create a list of word-score strings (e.g., "abc(3)") and apply word wrapping on them.
+    word_list = [f"{w}({s})" for w, s in words]
+    wrapped_word_lines = wrap_word_list(word_list, FONT, max_text_width)
+    words_y_offset = y_offset + 10 + FONT.get_linesize()  # start after message text
+    for line in wrapped_word_lines:
+        line_text = FONT.render(line, True, COLORS['text'])
+        screen.blit(line_text, (ui_x + 10, words_y_offset))
+        words_y_offset += FONT.get_linesize()
     
     # Draw found words
     found_text = SMALL_FONT.render("Found: " + ", ".join(valid_words_found), True, COLORS['text'])

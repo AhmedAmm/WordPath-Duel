@@ -76,7 +76,6 @@ def draw_ui(screen, overall_score, current_word, message, valid_words_found, wor
     
     # Draw message
     wrapped_message_text_lines = wrap_text(message, FONT, max_text_width)
-    # message_text = FONT.render(message, True, COLORS['text'])
     for line in wrapped_message_text_lines:
         curr_msg = FONT.render(line, True, COLORS['text'])
         screen.blit(curr_msg, (ui_x + 10, y_offset))
@@ -90,6 +89,23 @@ def draw_ui(screen, overall_score, current_word, message, valid_words_found, wor
         line_text = FONT.render(line, True, COLORS['text'])
         screen.blit(line_text, (ui_x + 10, words_y_offset))
         words_y_offset += FONT.get_linesize()
+    
+    # ---- New Section: Display Current Winner ----
+    if overall_score > 0:
+        winner_str = "Current Winner: Player"
+    elif overall_score < 0:
+        winner_str = "Current Winner: AI"
+    else:
+        winner_str = "Current Winner: Draw"
+    
+    # Apply word wrap to the winner text
+    winner_lines = wrap_text(winner_str, FONT, max_text_width)
+    winner_y_offset = words_y_offset + 10  # add a little spacing after the words list
+    for line in winner_lines:
+        line_text = FONT.render(line, True, COLORS['text'])
+        screen.blit(line_text, (ui_x + 10, winner_y_offset))
+        winner_y_offset += FONT.get_linesize()
+    # ------------------------------------------------
     
     # Draw found words
     found_text = SMALL_FONT.render("Found: " + ", ".join(valid_words_found), True, COLORS['text'])

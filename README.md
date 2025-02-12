@@ -18,7 +18,7 @@ A Python-based AI search game built with Pygame.
    - Generate an API key from your OpenRouter account.
    - Create a `.env` file in the project root and add the following line:
      ```ini
-     OPENROUTER_API_KEY=your_api_key_here
+     OPENAI_API_KEY=your_api_key_here
      ```
 4. Run the application:
    ```bash
